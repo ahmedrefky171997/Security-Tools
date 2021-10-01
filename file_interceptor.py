@@ -7,11 +7,16 @@ ack_dict = {}
 extension_list = [".exe",".asp",".PNG",".JPEG",".sh"]
 #check if a packet is a request
 def is_request(scapy_packet):
-	return scapy_packet[scapy.TCP].dport == 80
-
+	if scapy_packet.haslayer(scapy.TCP):
+		return scapy_packet[scapy.TCP].dport == 80
+	else:
+		return False
 #check if a packet is response
 def is_response(scapy_packet):
-	return scapy_packet[scapy.TCP].sport == 80
+	if scapy_packet.haslayer(scapy.TCP):
+		return scapy_packet[scapy.TCP].sport == 80
+	else:
+		return False
 
 #iterating through number of intersting extensions
 #if the extension is found in the load of a request packet
@@ -47,7 +52,7 @@ def process_response(scapy_packet,load):
 def inject_packet(packet):
 	scapy_packet = scapy.IP(packet.get_payload())
 	if scapy_packet.haslayer(scapy.Raw) :
-		if is_request(scapy_packet):
+		if is_request(scapy_packet) :
 			process_request(scapy_packet)			
 						
 		elif is_response(scapy_packet):
